@@ -1,0 +1,21 @@
+Ghi chú các biến với thanh ghi tương ứng
+n = $s0
+i = $t0
+input from user = $t2
+varible handle = $t1
+bool var  = $t3
+
+0<n<1000
+-> n có 999 phần tử int
+1 int = 4 byte
+999 int = 4*999 = 3996 byte
+- space 4 = 1 int
+-> 999 int = space 4*999 = 3996
+
+
+
+// tham khao
+- condition: https://people.cs.pitt.edu/~xujie/cs447/Mips/cond.html
+- loop: https://courses.engr.illinois.edu/cs232/sp2011/section/disc1sol.pdf
+- mips-tutorial: https://www.youtube.com/watch?v=NxjLeh6Y2Q0&list=PL5b07qlmA3P6zUdDf-o97ddfpvPFuNa5A&index=29
+- slide
