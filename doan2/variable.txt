@@ -18,4 +18,5 @@ bool var  = $t3
 - condition: https://people.cs.pitt.edu/~xujie/cs447/Mips/cond.html
 - loop: https://courses.engr.illinois.edu/cs232/sp2011/section/disc1sol.pdf
 - mips-tutorial: https://www.youtube.com/watch?v=NxjLeh6Y2Q0&list=PL5b07qlmA3P6zUdDf-o97ddfpvPFuNa5A&index=29
+- function: http://cs.brown.edu/courses/csci0310/content/lectures/L16.pdf
 - slide
