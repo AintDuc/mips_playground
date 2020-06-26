@@ -1,9 +1,14 @@
 Ghi chú các biến với thanh ghi tương ứng
-n = $s0
+n = $a1
 i = $t0
+j = $t1 - index array
+stop loop = $t3
 input from user = $t2
 varible handle = $t1
 bool var  = $t3
+argument var = $v1
+feature 5 - x = $s1
+
 
 0<n<1000
 -> n có 999 phần tử int
