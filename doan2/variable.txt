@@ -1,13 +1,16 @@
 Ghi chú các biến với thanh ghi tương ứng
-n = $a1
-i = $t0
-j = $t1 - index array
+n = $s0
+i = $t0 variable to stop loop
+index = $t1 - index array
 stop loop = $t3
+return value $t3
+
 input from user = $t2
 varible handle = $t1
 bool var  = $t3
 argument var = $v1
-feature 5 - x = $s1
+feature 1-6  = $s1
+feature 5 - x = $s2
 
 
 0<n<1000
@@ -17,6 +20,16 @@ feature 5 - x = $s1
 - space 4 = 1 int
 -> 999 int = space 4*999 = 3996
 
+- 1 .word = 32 bit
+- 999 .word = 999*32 = 31968 bit
+- 1 space = 4 word
+20 space = 5 word
+4 space = 1 word
+999
+
+- 12 space = 3 word
+- 4 space = 1 word
+- 3996 space= 999 word
 
 
 // tham khao

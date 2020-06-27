@@ -1,12 +1,10 @@
 .data
+	arr: .space 3996
 	a: .word 5
 	space: .asciiz " "
 	drop: .asciiz "\n"
+
 	mess: .asciiz "Thank you!"
-
-
-
-	arr: .space 3996
 
 	enterN: .asciiz "Enter n: "
 	enterElement: .asciiz "Enter element: "
@@ -28,6 +26,8 @@
 	printMaxIs: .asciiz "Maximum value is: "
 	enterValueX: .asciiz "Enter value to find: "
 	resultFind: .asciiz "Index result: "
+	isntIn: .asciiz "Value is not in array"
+	sum_is: .asciiz "Sum: "
 
 		
 
@@ -36,8 +36,9 @@
 	# start app
 	main:
 		jal enter_n
+		jal menu
 		# restore register by rule of register
-		jal restore_register
+		#jal restore_register
 		
 		
 	# end of app
@@ -48,13 +49,6 @@
 	system_pause:
 		jal mess_pop_up
 
-	# function: work - test something in the app
-	work:
-		li $v0,1
-		addi $t2,$t2,5
-		move $a0,$t2
-		syscall
-	#	jr $ra
 
 	# function: spacing
 	spacing:
@@ -106,19 +100,7 @@
 	enter_n:
 		sub $sp,$sp,4
 		sw $ra,4($sp)
-	
-		jal handle_n
-
-		lw $ra,4($sp)
-		add $sp,$sp,4
-
-		jr $ra
-
-	# function: handle_n - handle array
-	handle_n:
-		sub $sp,$sp,4
-		sw $ra,4($sp)
-
+		
 		enter_n_again:
 			li $v0,4
 			la $a0,enterN
@@ -127,76 +109,49 @@
 			li $v0,5
 			syscall		
 
-		blt $v0,0,enter_n_again
-		beq $v0,0,enter_n_again
-		bgt $v0,1000,enter_n_again
+			blt $v0,0,enter_n_again
+			beq $v0,0,enter_n_again
+			bgt $v0,1000,enter_n_again
 
 		# if get n - then get element
 		# $a1 save value of n (a0-a3 is register that contain argument)
-		move $a1,$v0
+		move $s0,$v0 # n = s0
 
-		# handle get element
-		jal handle_get_element
-			
-		# after that print menu
-		jal menu
-
-		lw $ra,4($sp)
-		add $sp,$sp,4
-
-		jr $ra
-
-
-	# function: handle_get_element(int n = $a1) - print enter element
-	handle_get_element:
-		sub $sp,$sp,4
-		sw $ra,4($sp)
-	 
-		# i = $t1
-		# index = j = $t1 (a[j])
-	
 		addi $t0,$0,0
 		addi $t1,$0,0
-		enter_ele:
-			# clear $t1 to 0
-			addi $t1,$t1,0
 
-			li $v0,4 
+		store:
+			li $v0,4
 			la $a0,enterElement
 			syscall
-
+		
 			li $v0,5
 			syscall
-
-			# push to array
-			# how to push value to array
-
-			# $t3 is stuff to stop j
-			addi $t4,$0,4
-			mul $t3,$a1,$t4
 		
-			store: 
-				sb $v0,arr($t1)
-				addi $t1,$t1,4 # i++
-				beq $t1,$t3,store
-						
-			add $t0,$t0,1
-			blt $t0,$a1,enter_ele # if i < n
-			
-		# debug
-		# jal log_array 
+			sw $v0,arr($t1)
+			addi $t1,$t1,4
+					
+			addi $t0,$t0,1
+			blt $t0,$s0,store
+
 
 		lw $ra,4($sp)
 		add $sp,$sp,4
 
 		jr $ra
+
+
+
+
+
+	
 #----------------------------- END USER CHOSEN HANDLE ---------------------------------------
 
 
 #----------------------------- FEATURE HANDLE ---------------------------------------
 
 # feature 1: print all elements in the array
-# function: log_array (int n = $a1) - print all elements in the array
+# function: log_array (int n = $s0) - print all elements in the array
 	log_array:
 		sub $sp,$sp,4
 		sw $ra,4($sp)
@@ -205,24 +160,27 @@
 		la $a0,printArrMess
 		syscall
 
-		# j = $t1 - index of array a[j]
-		# $t3 is stuff to stop j, $t4 is save 4 byte
-		addi $t4,$0,4
-		mul $t3,$a1,$t4 
-		addi $t1,$0,0
+		# debug n
+		#li $v0,1
+		#move $a0,$s0
+		#syscall
 
-		log_arr:
-			lb $t6,arr($t1)
-			
+		addi $t0,$0,0
+		addi $t1,$0,0
+		log_loop:
+
+			lw $t5,arr($t1)
+
 			li $v0,1
-			move $a0,$t6
-			syscall 
+			move $a0,$t5
+			syscall			
 
 			jal spacing
-		
+
 			addi $t1,$t1,4
-			bne $t1,$t3,log_arr
-	
+
+			addi $t0,$t0,1
+			blt $t0,$s0,log_loop
 
 		jal drop_down
 
@@ -234,45 +192,83 @@
 
 		jr $ra
 
+# feature 2: Get sum of all elements
+# function: sum_array (int n = $a1) - sum all elements in the array
+	sum_array:
+		sub $sp,$sp,4
+		sw $ra,4($sp)
+
+		# int rs = 0 
+		addi $t3,$0,0
+		
+		# i, index
+		addi $t0,$0,0
+		addi $t1,$0,0
+
+		loop_sum:
+			lw $t5,arr($t1) # a[i]
+		
+			add $t3,$t3,$t5 # rs = rs + a[i]
+
+			addi $t1,$t1,4
+			addi $t0,$t0,1
+
+			blt $t0,$s0,loop_sum
+	
+		
+		li $v0,4
+		la $a0,sum_is
+		syscall
+
+		li $v0,1
+		move $a0,$t3
+		syscall
+
+		jal drop_down
+
+		jal ask_feature
+
+		lw $ra,4($sp)
+		add $sp,$sp,4
+		
+		jr $ra
+
+		
+		
+
+
 # feature 4: Find element which is maximum value in the array
-# function: find_max (int array[] = arr .space 3996, int n = $a1)  - find maximum value in the array
+# function: find_max (int array[] = arr .space 3996, int n = $s0)  - find maximum value in the array
 	find_max:
 		sub $sp,$sp,4
 		sw $ra,4($sp)
 
-		# because of the rule of register is that return value are $v0,$v1 so max is $v1
+		# i, index
+		addi $t0,$0,0
+		addi $t1,$0,0
+		# suppose max = a[0]
+		lw $t5,arr($t1)
+		move $t3,$t5 # max = a[0]
 
-		# suppose maximun is $v1 = a[0]
-		# j = $t1, stop = $t3
-		addi $t1,$0,0 # i variable to stop loop
-		addi $t4,$0,4 # temp
-		mul $t3,$t4,$a1 # j - index of array
-		
-		# $v1 = a[0]		
-		lb $v1,arr($t1)
-	
-		find_loop:
-			# if max <= a[i] -> update max 
-			lb $t8,arr($t1)
+		find_max_loop:
+			lw $t5,arr($t1)
 
-			#add $t9,$0,$t8
-			ble $v1,$t8,this_is_max
-			j else_find_max	
-			this_is_max:		
-				move $v1,$t8
-			else_find_max:
-				addi $t1,$t1,4	# j++		
+			bgt $t3,$t5,this_is_max # if max>a[i] so this is max
+			# else - update max
+			move $t3,$t5
 
-			bne $t1,$t3,find_loop
+			this_is_max:
+				addi $t1,$t1,4
+				addi $t0,$t0,1
 
-		# print notification
+			blt $t0,$s0,find_max_loop
+
 		li $v0,4
 		la $a0,printMaxIs
 		syscall
 
-		# return max
 		li $v0,1
-		move $a0,$v1
+		move $a0,$t3
 		syscall
 
 		jal drop_down			
@@ -296,71 +292,58 @@
 
 		li $v0,5
 		syscall
-
-		# x = $s1
-		move $s1,$v0
 		
-	
+		# int rs = -1
+		addi $t3,$0,-1
 
-		# index - j, n = $a1
-		# loop i, stop $t3, temp 4 = $t4
+		# x = $s2
+		move $s2,$v0
+		
+		addi $t0,$0,0
 		addi $t1,$0,0
-		addi $t4,$0,4
-		mul $t3,$t4,$a1
 
-		# result = -1
-		addi $v1,$0,-1
-		loop_find_value:
-			lb $t7,arr($t1)	
-				
+		loop_find:
+			lw $t5,arr($t1)		
+			
+			bne $t5,$s2,continue_find # a[i]!= x
+			# else finded -> rs = index
+			div $t3,$t1,4
 			# debug
 			#li $v0,1
-			#move $a0,$t7
+			#move $a0,$t3
 			#syscall
-			
-			beq $s1,$t7,finded
-			j increate_j
-			finded:
-				move $v1,$t1
-		
-			increate_j:
+			continue_find:
 				addi $t1,$t1,4
+				addi $t0,$t0,1
+
+			blt $t0,$s0,loop_find
+	
+	
 		
-			bne $t1,$t3,loop_find_value
-		
+		bne $t3,-1,finded
+
 		li $v0,4
-		la $a0,resultFind
+		la $a0,isntIn
 		syscall
 
-		# print result: -1 or exist
-		# because index is divisor 4 of j so divide by 4
-		# debug
-		#li $v0,1
-		#move $a0,$v1
-		#syscall
+		jal spacing
 
-		bne $v1,-1,in_arr
-			# if v1 = -1 mean find nothing
-			addi $v1,$0,-1
-			li $v0,1
-			move $a0,$v1
+		finded:		
+			li $v0,4	
+			la $a0,resultFind
 			syscall
 
-			j continue_machine
-			# if vi != -1 mean finded
-		in_arr:
-			div $v1,$v1,4
 			li $v0,1
-			move $a0,$v1
+			move $a0,$t3
 			syscall
 
 
 		
-		continue_machine:
 
 		jal drop_down
 
 		jal ask_feature
+
 
 		lw $ra,4($sp)
 		add $sp,$sp,4
@@ -470,31 +453,31 @@
 			li $v0,5
 			syscall
 
-			move $s0,$v0
+			move $s1,$v0
 
 			# feature 1
-			beq $s0,1,log_array
+			beq $s1,1,log_array
 
 			# feature 2
-			beq $s0,2,do_choose
+			beq $s1,2,sum_array
 
 			# feature 3
-			beq $s0,3,log_array
+			beq $s1,3,log_array
 
 			# feature 4
-			beq $s0,4,find_max
+			beq $s1,4,find_max
 
 			# feature 5
-			beq $s0,5,find_value
+			beq $s1,5,find_value
 
 
 			# feature 6
-			beq $s0,6,exit_app
+			beq $s1,6,exit_app
 		
 			
-			blt $s0,1,do_choose
-			bgt $s0,6,do_choose
-			beq $s0,0,do_choose
+			blt $s1,1,do_choose
+			bgt $s1,6,do_choose
+			beq $s1,0,do_choose
 
 			beq $t5,1,do_choose # while true
 
