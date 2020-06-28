@@ -247,7 +247,7 @@
 
 # feature 3: Prints all elements which are prime
 # function: is_primes (int n) - check n is primes ? true 1 - false 0
-# n = a[i] -> argument just a0-a3 -> so take a3
+# n = a[i] -> argument just a0-a3 -> so take a3, return is v1
 	is_primes:
 		sub $sp,$sp,4
 		sw $ra,4($sp)
@@ -256,47 +256,35 @@
 		blt $a3,2,isnt_prime # if n < 2 false
 		beq $a3,2,prime # n == 2 true
 
+		# i = t9
+		addi $t9,$0,2
+		loop_check_prime:
+			div $a3,$t9
+			mfhi $t8 # get modulo
 
-		addi $t0,$0,2
-		loop_find_primes:
-			div $a3,$t0
-			mfhi $t4
+			beq $t8,0,isnt_prime # if n % i = 0 so isnt prime
 
-			beq $t4,0,isnt_prime
+			addi $t9,$t9,1
 
-			j ctn_loop
-	
-	
-         ctn_loop:
-				# debug
-				#li $v0,1
-				#move $a0,$t4
-				#syscall
+			blt $t9,$a3,loop_check_prime
 
-				addi $t0,$t0,1
-				blt $t0,$a3,loop_find_primes
-
+		# else prime
 		j prime
 
-
+	
 		isnt_prime:
-			addi $t3,$0,-1 # int rs = -1
-
-		j return_result
+			addi $t3,$0,-1
+			j return_value_prime
 
 		prime:
-		# else return 1
-		addi $t3,$0,1
+			addi $t3,$0,1
+			j return_value_prime
 
+		return_value_prime:
+			move $v1,$t3
+			j end_func_is_primes
 	
-		return_result:
-
-		# debug
-		#li $v0,1
-		#move $a0,$t3
-		#syscall
-
-		move $v1,$t3 # return rs
+		end_func_is_primes:
 
 		lw $ra,4($sp)
 		add $sp,$sp,4
@@ -312,40 +300,49 @@
 		la $a0,primes
 		syscall
 
-
 		addi $t0,$0,0
 		addi $t1,$0,0
 		loop_print_primes:
-			lw $t7,arr($t1)
+			lw $t5,arr($t1)
 
-			move $a3,$t7 # n = a3 to check prime
-			jal is_primes # check primes $v1
+			move $a3,$t5 # n = a3 to check prime
+			jal is_primes # check primes $v1, return is v1
+
+			beq $v1,1,print_it
 			
-			beq $v1,1,this_is_prime_so_print
+			j continue_loop_print_prime
 
-			j continue_loop_print
-
-	
-			this_is_prime_so_print:
+			print_it:
 				li $v0,1
-				move $a0,$t7
-				syscall
-				
-				jal spacing
+				move $a0,$t5
+				syscall 
 
-			continue_loop_print:
+		
+			#debug
+			#li $v0,1
+			#move $a0,$t7
+			#syscall
+
+
+			#debug
+			#li $v0,1
+			#move $a0,$v1
+			#syscall
+		
+			jal spacing
+
+			continue_loop_print_prime:
 				addi $t1,$t1,4
 				addi $t0,$t0,1
 				blt $t0,$s0,loop_print_primes
-
+			
+	####### COMMMMPLEEEETEDDDDD!!!!
 
 		jal drop_down 
 
 		jal ask_feature
 	
 	
-
-
 		lw $ra,4($sp)
 		add $sp,$sp,4
 
@@ -676,7 +673,7 @@ jal drop_down
 
 		jr $ra
 #--------------------------------------------------------------------------------------
-#------------------------------ Thank you! ---------------------------------------------------
+#------------------------------ Thank you! --------------------------------------------
 #----------------------------- THE END  ---------------------------------------
 		
 	

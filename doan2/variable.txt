@@ -39,4 +39,5 @@ feature 5 - x = $s2
 - mips-tutorial: https://www.youtube.com/watch?v=NxjLeh6Y2Q0&list=PL5b07qlmA3P6zUdDf-o97ddfpvPFuNa5A&index=29
 - function: http://cs.brown.edu/courses/csci0310/content/lectures/L16.pdf
 - marco: https://cs.ubishops.ca/home/ljensen/asm/marros-assembly.html#:~:text=A%20macro%20is%20a%20(few,formal%20parameters%20(or%20arguments).&text=macro%20and%20.,or%20Mars)%20Assembly%20PreProcessor).
+- hellped: https://www.math.unipd.it/~sperduti/ARCH09/mips_assembler.pdf
 - slide
