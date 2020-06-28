@@ -37,7 +37,7 @@ while:
 		#		return max	
 		#	}
 #----------------------------------------
-find ele equal to x
+find ele equal to x algorithm
 int find_element(int a[],int n,int x){
 	int result=-1;
 	for(int i=n-1;i>=0;i--){
@@ -49,7 +49,7 @@ int find_element(int a[],int n,int x){
 }
 
 #----------------------------------------
-sum all ele
+sum all ele algorithm
 int sum_array(int a[],int n){
 	int rs = 0;
 	for i from 0 to n-1
@@ -67,8 +67,28 @@ int sum_arr(int a[],int n){
 		rs+=a[n/2+1]
 	return rs;
 }
+# -----------------------------
+is primes algorithm
+is_primes (int n){
+	if(n<2)return false;
+	for i from 2 to n-1 
+		if n%i==0
+			return false
+	return true
+}
+#-------------------------------
+print ele which are prime in arr
+void print_primes(int a[],int n){
+	for(int i=n-1;i>=0;i--){
+		if(is_primes(a[i]))
+			clog<<a[i]<< " ";
+	}
+	clog<<endl;
+}
 
 
+
+#---------------------------------
 # bugs input
 
 			# $t3 is stuff to stop j

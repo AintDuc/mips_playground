@@ -28,6 +28,7 @@
 	resultFind: .asciiz "Index result: "
 	isntIn: .asciiz "Value is not in array"
 	sum_is: .asciiz "Sum: "
+	primes: .asciiz "Primes: "
 
 		
 
@@ -37,13 +38,17 @@
 	main:
 		jal enter_n
 		jal menu
-		# restore register by rule of register
+
+		# restore register by rules of register
 		#jal restore_register
 		
 		
 	# end of app
 	jal system_pause
 
+
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #-----------------------------  UTILS   ---------------------------------------	
 	# function: pause the app
 	system_pause:
@@ -89,11 +94,14 @@
 		jr $ra
 
 
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #-----------------------------  END UTILS   ---------------------------------------	
 
 
 
-
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #-----------------------------  USER CHOSEN HANDLE ---------------------------------------	
 	
 	# function: enter_n - get size of array from user
@@ -144,10 +152,14 @@
 
 
 
-	
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- END USER CHOSEN HANDLE ---------------------------------------
 
 
+
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- FEATURE HANDLE ---------------------------------------
 
 # feature 1: print all elements in the array
@@ -233,7 +245,112 @@
 		
 		jr $ra
 
-		
+# feature 3: Prints all elements which are prime
+# function: is_primes (int n) - check n is primes ? true 1 - false 0
+# n = a[i] -> argument just a0-a3 -> so take a3
+	is_primes:
+		sub $sp,$sp,4
+		sw $ra,4($sp)
+
+		addi $t3,$0,-1 # int rs = -1
+		blt $a3,2,isnt_prime # if n < 2 false
+		beq $a3,2,prime # n == 2 true
+
+
+		addi $t0,$0,2
+		loop_find_primes:
+			div $a3,$t0
+			mfhi $t4
+
+			beq $t4,0,isnt_prime
+
+			j ctn_loop
+	
+	
+         ctn_loop:
+				# debug
+				#li $v0,1
+				#move $a0,$t4
+				#syscall
+
+				addi $t0,$t0,1
+				blt $t0,$a3,loop_find_primes
+
+		j prime
+
+
+		isnt_prime:
+			addi $t3,$0,-1 # int rs = -1
+
+		j return_result
+
+		prime:
+		# else return 1
+		addi $t3,$0,1
+
+	
+		return_result:
+
+		# debug
+		#li $v0,1
+		#move $a0,$t3
+		#syscall
+
+		move $v1,$t3 # return rs
+
+		lw $ra,4($sp)
+		add $sp,$sp,4
+
+		jr $ra
+	
+# function: print_primes - print all elements which are prime
+	print_primes:
+		sub $sp,$sp,4
+		sw $ra,4($sp)
+
+		li $v0,4
+		la $a0,primes
+		syscall
+
+
+		addi $t0,$0,0
+		addi $t1,$0,0
+		loop_print_primes:
+			lw $t7,arr($t1)
+
+			move $a3,$t7 # n = a3 to check prime
+			jal is_primes # check primes $v1
+			
+			beq $v1,1,this_is_prime_so_print
+
+			j continue_loop_print
+
+	
+			this_is_prime_so_print:
+				li $v0,1
+				move $a0,$t7
+				syscall
+				
+				jal spacing
+
+			continue_loop_print:
+				addi $t1,$t1,4
+				addi $t0,$t0,1
+				blt $t0,$s0,loop_print_primes
+
+
+		jal drop_down 
+
+		jal ask_feature
+	
+	
+
+
+		lw $ra,4($sp)
+		add $sp,$sp,4
+
+		jr $ra
+
 		
 
 
@@ -358,11 +475,15 @@
 		# jal restore_register
 
 		jal system_pause
-	
+
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- END FEATURE HANDLE ---------------------------------------
 
 
 
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- MENU HANDLE ---------------------------------------
 	# function: menu - print menu
 	menu:
@@ -462,7 +583,7 @@
 			beq $s1,2,sum_array
 
 			# feature 3
-			beq $s1,3,log_array
+			beq $s1,3,print_primes
 
 			# feature 4
 			beq $s1,4,find_max
@@ -490,8 +611,14 @@
 		add $sp,$sp,4
 
 		jr $ra
+
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- END - MENU HANDLE ---------------------------------------
 		
+
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 #----------------------------- RESTORE REGISTER  ---------------------------------------
 	restore_register:
 		sub $sp,$sp,4
@@ -548,7 +675,8 @@ jal drop_down
 		add $sp,$sp,4
 
 		jr $ra
-
+#--------------------------------------------------------------------------------------
+#------------------------------ Thank you! ---------------------------------------------------
 #----------------------------- THE END  ---------------------------------------
 		
 	

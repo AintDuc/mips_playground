@@ -80,6 +80,6 @@ space: " "
 		lw $ra,4($sp)
 		add $sp,$sp,4
 
-		jr $ra
+		jr $ra 
 	
 	
